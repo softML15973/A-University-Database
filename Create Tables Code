@@ -1,0 +1,81 @@
+create table Professor
+(
+ssn number(10),
+name varchar2(30) not null,
+rank varchar2(10) not null,
+age number(10) not null,
+research_specialty varchar(20) not null,
+constraint professor_pk primary key(ssn)
+);
+
+create table project
+(
+project_number number(10),
+sponsor_name varchar2(30) not null,
+starting_date date not null,
+ending_date date not null,
+budget number(10) not null,
+ssn_project_investigator number(10),
+constraint project_pk primary key(project_number),
+constraint project_fk foreign key(ssn_project_investigator) references Professor(ssn)
+);
+
+create table professor_work_project
+ (
+ project_number number(10),
+ ssn_project_coinvestigator number(10),
+ constraint pwp_fk foreign key(project_number) references project(project_number),
+constraint pwp1_fk foreign key(ssn_project_coinvestigator) references Professor(ssn),
+constraint pwp_pk primary key(project_number,ssn_project_coinvestigator)
+);
+
+create table department
+(
+department_number number(10),
+department_name varchar2(30),
+ssn_chairman number(10),
+constraint department_pk primary key(department_number),
+constraint department_fk foreign key(ssn_chairman) references Professor(ssn)
+);
+
+create table graduate_student
+(
+ssn_student number(10),
+name varchar2(30),
+age number(3),
+degree_program varchar2(20),
+department_number number(10),
+ssn_student_advisor number(10),
+constraint graduate_pk primary key(ssn_student),
+constraint graduate_fk foreign key(department_number) references department(department_number),
+constraint graduate_fk1 foreign key(ssn_student_advisor) references graduate_student(ssn_student)
+);
+
+create table course_advised
+(
+course_name varchar2(20),
+ssn_student number(10),
+constraint course_pk primary key(ssn_student),
+constraint course_fk foreign key(ssn_student) references graduate_student(ssn_student)
+);
+
+create table graduate_student_work_project
+(
+project_number number(10),
+ssn_project_assistant number(10),
+ssn_supervisor number(10),
+constraint gswp_pk primary key(project_number,ssn_project_assistant,ssn_supervisor),
+constraint gswp_fk1 foreign key(project_number) references project(project_number),
+constraint gswp_fk2 foreign key(ssn_project_assistant) references graduate_student(ssn_student)
+constraint gswp_fk3 foreign key(ssn_supervisor) references Professor(ssn)
+);
+
+create table professor_work_department
+(
+ssn_professor number(10),
+department_number number(10),
+number_of_hours number(2),
+constraint pwd_pk primary key(ssn_professor,department_number),
+constraint pwd_fk1 foreign key(ssn_professor) references Professor(ssn),
+constraint pwd_fk2 foreign key(department_number) references department(department_number)
+);
